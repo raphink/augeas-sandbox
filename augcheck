@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Parse a file with a lens
+# using Augeas and display
+# the generated tree
+#
+
+FILE="$1"
+LENS="$2"
+
+[[ -z $LENS || "x$1" = "x-h" || "x$1" = "x--help" ]] \
+   && echo "Usage: $0 <file> <lens>" \
+   && exit 1
+
+TMPDIR=$(mktemp -d /tmp/augcheck.XXXXXX)
+TMPFILE="$TMPDIR/parse_file.aug"
+trap "rm -rf $TMPDIR" EXIT TERM
+
+cat << EOF > $TMPFILE
+module Parse_File =
+
+test $LENS.lns get (Sys.read_file "$FILE") = ?
+EOF
+
+augparse $TMPFILE
+
+exit 0
