@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# Load a file with a lens
+# using Augeas
+#
+
+FILE="$1"
+LENS="$2"
+
+[[ -z $LENS || "x$1" = "x-h" || "x$1" = "x--help" ]] \
+   && echo "Usage: $0 <file> <lens>" \
+   && exit 1
+
+cat <<EOF | augtool --noautoload -i
+set /augeas/load/$LENS/lens "$LENS.lns"
+set /augeas/load/$LENS/incl "$FILE"
+load
+EOF
