@@ -9,6 +9,8 @@ LENS="$2"
 
 shift 2
 
+FILE=$(readlink -f $FILE)
+
 [[ -z $LENS || "x$1" = "x-h" || "x$1" = "x--help" ]] \
    && echo "Usage: $0 <file> <lens> [<cmd>[\n<cmd>]*]" \
    && exit 1
