@@ -9,15 +9,13 @@ LENS="$2"
 
 shift 2
 
-FILE=$(readlink -f $FILE)
-
 [[ -z $LENS || "x$1" = "x-h" || "x$1" = "x--help" ]] \
    && echo "Usage: $0 <file> <lens> [<cmd>[\n<cmd>]*]" \
    && exit 1
 
-cat <<EOF | augtool --noautoload -i
+cat <<EOF | augtool --noautoload -i -r $(dirname $FILE)
 set /augeas/load/$LENS/lens "$LENS.lns"
-set /augeas/load/$LENS/incl "$FILE"
+set /augeas/load/$LENS/incl "$(basename $FILE)"
 load
 $(echo -e $@)
 EOF
