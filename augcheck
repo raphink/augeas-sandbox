@@ -22,6 +22,6 @@ module Parse_File =
 test $LENS.lns get (Sys.read_file "$FILE") = ?
 EOF
 
-augparse $TMPFILE
+augparse --notypecheck $TMPFILE
 
 exit 0
