@@ -1,0 +1,2 @@
+setm * name Mysql
+setm * shell /bin/sh
