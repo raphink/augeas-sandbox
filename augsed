@@ -6,11 +6,9 @@ while getopts "lf:" opt; do
   case $opt in
     l)
       BYLINE=1
-      shift
       ;;
     f)
       INPUTFILE=$OPTARG
-      shift 2
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -18,9 +16,16 @@ while getopts "lf:" opt; do
   esac
 done
 
+shift $(( OPTIND - 1 ));
+
 NL="\n"
 LENS=$1
 shift
+
+if [ -z $LENS ]; then
+  echo "E: You must provide a lens"
+  exit 1
+fi
 
 if [ -z $INPUTFILE ]; then
   COMMANDS=$@

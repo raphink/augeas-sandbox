@@ -6,21 +6,30 @@ while getopts "lf:" opt; do
   case $opt in
     l)
       BYLINE=1
-      shift
       ;;
     f)
       INPUTFILE=$OPTARG
-      shift 2
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
   esac
 done
+
+shift $(( OPTIND - 1 ));
 
 NL="\n"
 LENS=$1
 shift
+
+if [ -z $LENS ]; then
+  echo "E: You must provide a lens"
+  exit 1
+fi
 
 if [ -z $INPUTFILE ]; then
   COMMANDS=$@
@@ -32,7 +41,7 @@ function do_augtool() {
   input="${1//$'\n'/\n}"
   shift
   commands="$@"
-  (augtool --noautoload | grep  -v '(no matches)' | sed -e 's@^/parsed/[^=]\+ = @@') << EOF
+  (augtool --noautoload | grep  -v '(no matches)') << EOF
 set /input "$input$NL"
 store $LENS /input /parsed
 print /augeas//error
