@@ -12,10 +12,10 @@ let date =
                     . time ]
 
 let syslog =
-     let host = [ label "host" . store Rx.word ]
+     let host = [ label "host" . store Rx.word? ]
   in let id = [ label "id" . Util.del_str "[" . store Rx.decimal . Util.del_str "]" ]
   in let service = [ label "service" . store Rx.word . id? . Sep.colon ]
-  in let message = [ label "message" . store Rx.space_in ]
+  in let message = [ label "message" . store Rx.space_in? ]
   in [ seq "line" . date . Sep.space
                   . host . Sep.space
                   . service . Sep.opt_space
