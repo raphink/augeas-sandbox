@@ -1,0 +1,51 @@
+#!/bin/bash
+
+BYLINE=0
+
+while getopts "lf:" opt; do
+  case $opt in
+    l)
+      BYLINE=1
+      shift
+      ;;
+    f)
+      INPUTFILE=$OPTARG
+      shift 2
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+  esac
+done
+
+NL="\n"
+LENS=$1
+shift
+
+if [ -z $INPUTFILE ]; then
+  COMMANDS=$@
+else
+  COMMANDS="$(cat $INPUTFILE)"
+fi
+
+function do_augtool() {
+  input="${1//$'\n'/\n}"
+  shift
+  commands="$@"
+  (augtool --noautoload | grep  -v '(no matches)' | sed -e 's@^/output = @@') << EOF
+set /input "$input$NL"
+store $LENS /input /parsed
+print /augeas//error
+set /augeas/context /parsed
+$commands
+EOF
+}
+
+if [ $BYLINE = 1 ]; then
+  while read line; do
+    do_augtool "$line" "$COMMANDS"
+  done </dev/stdin
+else
+  INPUT="$(cat /dev/stdin)"
+  do_augtool "$INPUT" "$COMMANDS"
+fi
