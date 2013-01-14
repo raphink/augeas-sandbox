@@ -32,7 +32,7 @@ function do_augtool() {
   input="${1//$'\n'/\n}"
   shift
   commands="$@"
-  (augtool --noautoload | grep  -v '(no matches)' | sed -e 's@^/output = @@') << EOF
+  (augtool --noautoload | grep  -v '(no matches)' | sed -e 's@^/parsed/[^=]\+ = @@') << EOF
 set /input "$input$NL"
 store $LENS /input /parsed
 print /augeas//error
