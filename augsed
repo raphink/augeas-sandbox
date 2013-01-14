@@ -1,5 +1,25 @@
 #!/bin/bash
 
+function usage() {
+  echo "$0 [-l] [-f <input_file>] Lens.lns [command]"
+  exit 0
+}
+
+function do_augtool() {
+  input="${1//$'\n'/\n}"
+  shift
+  commands="$@"
+  (augtool --noautoload | grep  -v '(no matches)' | sed -e 's@^/output = @@') << EOF
+set /input "$input$NL"
+store $LENS /input /parsed
+print /augeas//error
+set /augeas/context /parsed
+$commands
+retrieve $LENS /input /parsed /output
+get /output
+EOF
+}
+
 BYLINE=0
 
 while getopts "lf:" opt; do
@@ -24,6 +44,7 @@ shift
 
 if [ -z $LENS ]; then
   echo "E: You must provide a lens"
+  usage
   exit 1
 fi
 
@@ -32,21 +53,6 @@ if [ -z $INPUTFILE ]; then
 else
   COMMANDS="$(cat $INPUTFILE)"
 fi
-
-function do_augtool() {
-  input="${1//$'\n'/\n}"
-  shift
-  commands="$@"
-  (augtool --noautoload | grep  -v '(no matches)' | sed -e 's@^/output = @@') << EOF
-set /input "$input$NL"
-store $LENS /input /parsed
-print /augeas//error
-set /augeas/context /parsed
-$commands
-retrieve $LENS /input /parsed /output
-get /output
-EOF
-}
 
 if [ $BYLINE = 1 ]; then
   while read line; do
