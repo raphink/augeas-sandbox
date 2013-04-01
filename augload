@@ -16,6 +16,7 @@ shift 2
 cat <<EOF | augtool --noautoload -i -r $(dirname $FILE)
 set /augeas/load/$LENS/lens "$LENS.lns"
 set /augeas/load/$LENS/incl "$(basename $FILE)"
+set /augeas/context "/files/$(basename $FILE)"
 load
 $(echo -e $@)
 EOF
