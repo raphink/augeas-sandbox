@@ -9,6 +9,11 @@ augload
 As of Augeas 1.0.0, this functionality is available in `augtool` using the `--transform` option,
 and this tool is thus obsolete.
 
+augloadone
+==========
+
+`augloadone` takes a single file name. It loads `augtool` to parse only this file, removing all other lenses. It is an alternative to `augtool` (or using `--transform`) which doesn't involve knowing the lens name. It also sets the context automatically.
+
 augcheck
 ========
 
