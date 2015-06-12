@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Prints a diff between expected and actual trees when they fail to match
+
+TEMP=$(mktemp -d)
+trap "rm -rf $TEMP" EXIT
+
+augparse "$@" >$TEMP/output
+RET=$?
+
+if egrep -q "^\s*Expected:" $TEMP/output && \
+  egrep -q "^\s*Actual:" $TEMP/output; then
+    awk '
+      /^\s*Actual:/ { exit }
+      output == 1 { print }
+      /^\s*Expected:/ { output = 1 }
+    ' $TEMP/output > $TEMP/expected
+
+    awk '
+      /^Syntax error:/ { exit }
+      output == 1 { print }
+      /^\s*Actual:/ { output = 1 }
+    ' $TEMP/output > $TEMP/actual
+
+    (cd $TEMP && diff -u {expected,actual})
+else
+    cat $TEMP/output
+fi
+
+exit $RET
