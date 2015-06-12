@@ -2,14 +2,11 @@
 #
 # Prints a diff between expected and actual trees when they fail to match
 
-while getopts "c" opt; do
+while getopts "ctI:" opt; do
   case $opt in
     c)
       COLORIZE=yes
       shift
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
       ;;
     :)
       echo "Option -$OPTARG requires an argument." >&2
@@ -27,6 +24,11 @@ RET=$?
 if egrep -q "^\s*Expected:" $TEMP/output && \
   egrep -q "^\s*Actual:" $TEMP/output; then
     awk '
+      /^\s*Expected:/ { exit }
+      output == 1 { print }
+    ' $TEMP/output > $TEMP/head
+
+    awk '
       /^\s*Actual:/ { exit }
       output == 1 { print }
       /^\s*Expected:/ { output = 1 }
@@ -38,10 +40,12 @@ if egrep -q "^\s*Expected:" $TEMP/output && \
       /^\s*Actual:/ { output = 1 }
     ' $TEMP/output > $TEMP/actual
 
+    (cd $TEMP && diff -u {expected,actual} > $TEMP/diff)
+    cat $TEMP/head
     if [ $COLORIZE = "yes" ]; then
-      (cd $TEMP && diff -u {expected,actual}| colordiff)
+      cat $TEMP/diff | colordiff
     else
-      (cd $TEMP && diff -u {expected,actual})
+      cat $TEMP/diff
     fi
 else
     cat $TEMP/output
