@@ -2,6 +2,22 @@
 #
 # Prints a diff between expected and actual trees when they fail to match
 
+while getopts "c" opt; do
+  case $opt in
+    c)
+      COLORIZE=yes
+      shift
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
 TEMP=$(mktemp -d)
 trap "rm -rf $TEMP" EXIT
 
@@ -22,7 +38,11 @@ if egrep -q "^\s*Expected:" $TEMP/output && \
       /^\s*Actual:/ { output = 1 }
     ' $TEMP/output > $TEMP/actual
 
-    (cd $TEMP && diff -u {expected,actual})
+    if [ $COLORIZE = "yes" ]; then
+      (cd $TEMP && diff -u {expected,actual}| colordiff)
+    else
+      (cd $TEMP && diff -u {expected,actual})
+    fi
 else
     cat $TEMP/output
 fi
