@@ -36,6 +36,28 @@ auggrep
     /parsed/1/date/time = 09:56:47
     /parsed/1/date/time = 09:56:47
 
+augparsediff
+============
+
+`augparse` is a wrapper for the regular `augparse`, usually used to run tests contained within modules.  When comparing trees in tests, `augparsediff` prints a regular unified diff of the expected versus actual tree, making it easier to find the differences.
+
+```diff
+$ augparsediff -c -I lenses/ lenses/tests/test_mysql.aug 
+Syntax error in lens definition
+Failed to load lenses/tests/test_mysql.aug
+--- expected	2015-06-12 11:25:32.982707547 +0200
++++ actual	2015-06-12 11:25:32.986707733 +0200
+@@ -113,6 +113,9 @@
+     { "max_allowed_packet" = "16M" }
+     {  }
+   }
++  { "!includedir" = "/etc/mysql/middle_include" }
++  { "!include" = "/etc/mysql/middle_include.conf" }
++  {  }
+   { "target" = "mysql"
+     { "#comment" = "no-auto-rehash	# faster start of mysql but no tab completition" }
+     {  }
+```
 
 augsed
 ======
