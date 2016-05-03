@@ -6,7 +6,7 @@
 #
 # Example usage:
 #
-#   insert_xml config.xml "<hello world='pluto'>people</hello>" /settings/planet
+#   insert_xml $PWD/config.xml "<hello world='pluto'>people</hello>" /settings/planet
 #
 
 file="$1"
