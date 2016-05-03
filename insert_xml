@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Parse <input>
+# and insert it in <file> at <path>
+#
+
+file="$1"
+input="$2"
+path="$3"
+
+cat << EOF | /opt/puppetlabs/puppet/bin/augtool -Ast "Xml incl $file"
+set /input "$input"
+store Xml.lns /input /parsed
+mv /parsed /files$file/$path
+EOF
+
