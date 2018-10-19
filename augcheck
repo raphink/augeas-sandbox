@@ -7,9 +7,11 @@
 
 FILE="$1"
 LENS="$2"
+shift 2
+OPTS="$@"
 
 [[ -z $LENS || "x$1" = "x-h" || "x$1" = "x--help" ]] \
-   && echo "Usage: $0 <file> <lens>" \
+   && echo "Usage: $0 <file> <lens> [opts]" \
    && exit 1
 
 TMPDIR=$(mktemp -d /tmp/augcheck.XXXXXX)
@@ -22,6 +24,6 @@ module Parse_File =
 test $LENS.lns get (Sys.read_file "$FILE") = ?
 EOF
 
-augparse --notypecheck $TMPFILE
+augparse $OPTS --notypecheck $TMPFILE
 
 exit 0
